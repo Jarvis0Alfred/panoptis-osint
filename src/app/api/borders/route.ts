@@ -1,8 +1,5 @@
 import { NextResponse } from "next/server";
-
 export const revalidate = 86400;
-
-// Simplified country borders as GeoJSON
 const COUNTRIES = {
   type: "FeatureCollection",
   features: [
@@ -21,28 +18,14 @@ const COUNTRIES = {
   ],
   metadata: { count: 12, source: "simplified-borders", note: "Replace with Natural Earth or GADM for production" }
 };
-
 export async function GET() {
-  try {
-    // Try Natural Earth first
-    const response = await fetch("https://naturalearth.s3.amazonaws.com/110m_cultural/ne_110m_admin_0_countries.geojson", {
-      headers: { "User-Agent": "WorldWideView/1.0" },
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      return NextResponse.json({
-        type: "FeatureCollection",
-        features: data.features || [],
-        metadata: { count: data.features?.length || 0, source: "naturalearth" },
-      });
-    }
-    
-    // Fallback to simplified borders
-    return NextResponse.json(COUNTRIES);
-  } catch (error) {
-    console.error("[BordersRoute] Error:", error);
-    // Return simplified borders on error
-    return NextResponse.json(COUNTRIES);
-  }
+    try {
+        const response = await fetch("https://naturalearth.s3.amazonaws.com/110m_cultural/ne_110m_admin_0_countries.geojson", {
+            headers: { "User-Agent": "WorldWideView/1.0" } });
+        if (response.ok) {
+            const data = await response.json();
+            return NextResponse.json({ type: "FeatureCollection", features: data.features || [], metadata: { count: data.features?.length || 0, source: "naturalearth" } });
+        }
+        return NextResponse.json(COUNTRIES);
+    } catch (error) { console.error("[BordersRoute] Error:", error); return NextResponse.json(COUNTRIES); }
 }

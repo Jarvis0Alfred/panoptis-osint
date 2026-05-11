@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-
 export const revalidate = 86400;
-
 const MAJOR_AIRPORTS = [
     { id: "LHR", name: "London Heathrow", lat: 51.4700, lon: -0.4543, iata: "LHR", country: "UK" },
     { id: "JFK", name: "John F. Kennedy", lat: 40.6413, lon: -73.7781, iata: "JFK", country: "USA" },
@@ -16,31 +14,10 @@ const MAJOR_AIRPORTS = [
     { id: "PEK", name: "Beijing Capital", lat: 40.0799, lon: 116.6031, iata: "PEK", country: "China" },
     { id: "ATL", name: "Atlanta Hartsfield-Jackson", lat: 33.6407, lon: -84.4277, iata: "ATL", country: "USA" },
 ];
-
 export async function GET() {
     try {
-        const features = MAJOR_AIRPORTS.map((a) => ({
-            type: "Feature",
-            properties: {
-                id: a.id,
-                name: a.name,
-                pluginId: "airports",
-                iata: a.iata,
-                country: a.country,
-            },
-            geometry: {
-                type: "Point",
-                coordinates: [a.lon, a.lat],
-            },
-        }));
-
-        return NextResponse.json({
-            type: "FeatureCollection",
-            features,
-            metadata: { count: features.length, source: "ourairports-sample", note: "Replace with full OurAirports API for production" },
-        });
-    } catch (error) {
-        console.error("[AirportsRoute] Error:", error);
-        return NextResponse.json({ error: "Failed to fetch airport data" }, { status: 502 });
-    }
+        const features = MAJOR_AIRPORTS.map((a) => ({ type: "Feature", properties: { id: a.id, name: a.name, pluginId: "airports", iata: a.iata, country: a.country },
+            geometry: { type: "Point", coordinates: [a.lon, a.lat] } }));
+        return NextResponse.json({ type: "FeatureCollection", features, metadata: { count: features.length, source: "ourairports-sample", note: "Replace with full OurAirports API for production" } });
+    } catch (error) { console.error("[AirportsRoute] Error:", error); return NextResponse.json({ error: "Failed to fetch airport data" }, { status: 502 }); }
 }

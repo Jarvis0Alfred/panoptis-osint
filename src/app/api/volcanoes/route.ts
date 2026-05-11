@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-
 export const revalidate = 3600;
-
 const VOLCANOES = [
     { id: "kilauea", name: "Kilauea", lat: 19.4069, lon: -155.2834, status: "Erupting", elevation: 1247 },
     { id: "etna", name: "Mount Etna", lat: 37.7510, lon: 14.9934, status: "Erupting", elevation: 3357 },
@@ -14,31 +12,10 @@ const VOLCANOES = [
     { id: "stromboli", name: "Stromboli", lat: 38.7890, lon: 15.2133, status: "Erupting", elevation: 926 },
     { id: "eyjafjallajokull", name: "Eyjafjallajokull", lat: 63.6314, lon: -19.6083, status: "Dormant", elevation: 1651 },
 ];
-
 export async function GET() {
     try {
-        const features = VOLCANOES.map((v) => ({
-            type: "Feature",
-            properties: {
-                id: v.id,
-                name: v.name,
-                pluginId: "volcanoes",
-                status: v.status,
-                elevation: v.elevation,
-            },
-            geometry: {
-                type: "Point",
-                coordinates: [v.lon, v.lat],
-            },
-        }));
-
-        return NextResponse.json({
-            type: "FeatureCollection",
-            features,
-            metadata: { count: features.length, source: "smithsonian-gvp", note: "Major Holocene volcanoes" },
-        });
-    } catch (error) {
-        console.error("[VolcanoesRoute] Error:", error);
-        return NextResponse.json({ error: "Failed to fetch volcano data" }, { status: 502 });
-    }
+        const features = VOLCANOES.map((v) => ({ type: "Feature", properties: { id: v.id, name: v.name, pluginId: "volcanoes", status: v.status, elevation: v.elevation },
+            geometry: { type: "Point", coordinates: [v.lon, v.lat] } }));
+        return NextResponse.json({ type: "FeatureCollection", features, metadata: { count: features.length, source: "smithsonian-gvp", note: "Major Holocene volcanoes" } });
+    } catch (error) { console.error("[VolcanoesRoute] Error:", error); return NextResponse.json({ error: "Failed to fetch volcano data" }, { status: 502 }); }
 }
